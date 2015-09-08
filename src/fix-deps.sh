@@ -2,14 +2,14 @@
 
 set -e
 
-raco pkg install --no-setup --clone $1
+raco pkg install --deps search-auto --no-setup --clone $1
 cd $1
-hub fork || echo "fork already exists"
-hub checkout -b auto-fix-deps || hub checkout auto-fix-deps
-hub reset --hard origin/master
+/src/hub fork || echo "fork already exists"
+/src/hub checkout -b auto-fix-deps || /src/hub checkout auto-fix-deps
+/src/hub reset --hard origin/master
 raco setup --fix-pkg-deps || echo "fixed"
-hub add info.rkt
-hub commit -m "Fix dependencies."
-hub push -f $GITHUB_USER auto-fix-deps
-hub pull-request -m "Fix dependencies."
+/src/hub add info.rkt
+/src/hub commit -m "Fix dependencies."
+/src/hub push -f $GITHUB_USER auto-fix-deps
+/src/hub pull-request -m "Fix dependencies."
 raco pkg remove $1

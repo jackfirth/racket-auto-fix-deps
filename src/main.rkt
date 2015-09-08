@@ -46,7 +46,7 @@ require fancy-app
   (system (apply format format-str vs)))
 
 (define (auto-fix-deps! pkg-name)
-  (systemf "./fix-deps.sh ~a" pkg-name))
+  (systemf "/src/fix-deps.sh ~a" pkg-name))
 
 
 (module+ main
