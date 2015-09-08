@@ -2,7 +2,7 @@
 
 set -e
 
-(raco pkg show $1 | grep clone) || (raco pkg remove $1 && raco pkg install --no-setup --clone $1)
+raco pkg install --no-setup --clone $1
 cd $1
 hub fork || echo "fork already exists"
 hub checkout -b auto-fix-deps || hub checkout auto-fix-deps
