@@ -4,7 +4,7 @@ machine:
 
 test:
   override:
-    - docker login --username="$DOCKER_USER_NAME" --email="$DOCKER_USER_EMAIL" --password="$DOCKER_USER_PASSWORD" tutum.co
+    - docker login --username="$DOCKER_USER_NAME" --email="$DOCKER_USER_EMAIL" --password="$DOCKER_USER_PASSWORD" "tutum.co"
     - docker build -t auto-fix-deps .
     - docker tag auto-fix-deps $DOCKER_REGISTRY_HOST/$DOCKER_USER_NAME/auto-fix-deps
     - docker push $DOCKER_REGISTRY_HOST/$DOCKER_USER_NAME/auto-fix-deps
