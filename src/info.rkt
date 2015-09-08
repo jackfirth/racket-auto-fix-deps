@@ -4,4 +4,5 @@
   '("base"
     "rackunit-lib"
     "fancy-app"
+    "request"
     "sweet-exp"))
