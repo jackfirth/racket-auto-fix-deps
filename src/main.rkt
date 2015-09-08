@@ -48,8 +48,10 @@ require fancy-app
 (define (auto-fix-deps! pkg-name)
   (systemf "/src/fix-deps.sh ~a" pkg-name))
 
+(define (filter-my-packages pkg-names)
+  (filter (string-contains? "jack-" _) pkg-names))
 
 (module+ main
-  (define bad-pkg-names (names-of-bad-pkgs (all-pkg-details!)))
+  (define bad-pkg-names (filter-my-packages (names-of-bad-pkgs (all-pkg-details!))))
   (for ([pkg-name (in-list bad-pkg-names)])
     (auto-fix-deps! pkg-name)))
