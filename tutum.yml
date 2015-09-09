@@ -1,0 +1,18 @@
+tutum-cron:
+  image: vizzbuzz/tutum-cron
+  autorestart: always
+  cpu_shares: 128
+  mem_limit: 64m
+  roles:
+    - global
+  environment:
+    JOB_CRON_SCHEDULE: '* 2 * * *'
+  links:
+    - job
+job:
+  build: tutum.co/jackfirth/auto-fix-deps
+  environment:
+    GITHUB_USER:
+    GITHUB_PASSWORD:
+    GITHUB_USER_NAME:
+    GITHUB_USER_EMAIL:
