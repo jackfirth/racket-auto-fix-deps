@@ -30,8 +30,7 @@ require fancy-app
 
 (define github-pkg-source? (string-contains? "github.com" _))
 
-(define (pkg-has-source-on-github? pkg-details)
-  (github-pkg-source? (hash-ref pkg-details 'source)))
+(define pkg-has-source-on-github? (compose github-pkg-source? (hash-ref _ 'source)))
 
 
 (define (all-pkg-details!) (get catalog-requester "pkgs-all"))
@@ -51,6 +50,4 @@ require fancy-app
 
 (module+ main
   (define bad-pkg-names (names-of-bad-pkgs (all-pkg-details!)))
-  (set! bad-pkg-names '("lens"))
-  (for ([pkg-name (in-list bad-pkg-names)])
-    (auto-fix-deps! pkg-name)))
+  (for-each auto-fix-deps! bad-pkg-names))
