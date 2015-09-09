@@ -7,7 +7,6 @@ git config --global user.name "$GITHUB_USER_NAME"
 git config --global hub.protocol https
 
 echo "machine github.com login $GITHUB_USER password $GITHUB_PASSWORD" >> ~/.netrc
-ou
 raco pkg install --deps search-auto --no-setup --clone $1
 cd $1
 /src/hub fork || echo "fork already exists"
