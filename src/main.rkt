@@ -1,8 +1,9 @@
 #lang sweet-exp racket
 
 require fancy-app
-       request
-       "filter-hash.rkt"
+        predicates
+        request
+        "filter-hash.rkt"
 
 
 (define read-from-string (compose read open-input-string))
@@ -27,20 +28,20 @@ require fancy-app
 (define (string-contains? contain-str str)
   (regexp-match? (regexp contain-str) str))
 
-(define github-pkg-source? (string-contains? "git://github.com" _))
+(define github-pkg-source? (string-contains? "github.com" _))
 
 (define (pkg-has-source-on-github? pkg-details)
   (github-pkg-source? (hash-ref pkg-details 'source)))
 
 
 (define (all-pkg-details!) (get catalog-requester "pkgs-all"))
+(define bad-pkg? (and? catalog-build-succeeded?
+                       has-undeclared-dependencies?
+                       pkg-has-source-on-github?))
 
 (define (names-of-bad-pkgs all-pkg-details)
   (hash-keys
-   (filter-hash-by-value all-pkg-details
-                         (and/c catalog-build-succeeded?
-                                has-undeclared-dependencies?
-                                pkg-has-source-on-github?))))
+   (filter-hash-by-value all-pkg-details bad-pkg?)))
 
 (define (systemf format-str . vs)
   (system (apply format format-str vs)))
@@ -48,10 +49,8 @@ require fancy-app
 (define (auto-fix-deps! pkg-name)
   (systemf "/src/fix-deps.sh ~a" pkg-name))
 
-(define (filter-my-packages pkg-names)
-  (filter (string-contains? "jack-" _) pkg-names))
-
 (module+ main
-  (define bad-pkg-names (filter-my-packages (names-of-bad-pkgs (all-pkg-details!))))
+  (define bad-pkg-names (names-of-bad-pkgs (all-pkg-details!)))
+  (set! bad-pkg-names '("lens"))
   (for ([pkg-name (in-list bad-pkg-names)])
     (auto-fix-deps! pkg-name)))
