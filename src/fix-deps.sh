@@ -4,6 +4,9 @@ set -e
 
 git config --global user.email "$GITHUB_USER_EMAIL"
 git config --global user.name "$GITHUB_USER_NAME"
+git config --global hub.protocol https
+
+echo "machine github.com login $GITHUB_USER password $GITHUB_PASSWORD" >> ~/.netrc
 
 raco pkg install --deps search-auto --no-setup --clone $1
 cd $1
