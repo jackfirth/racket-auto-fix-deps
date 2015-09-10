@@ -6,7 +6,7 @@ tutum-cron:
   roles:
     - global
   environment:
-    JOB_CRON_SCHEDULE: '* 2 * * *'
+    JOB_CRON_SCHEDULE: '0 2 * * *'
   links:
     - job
 job:
