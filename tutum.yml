@@ -10,7 +10,7 @@ tutum-cron:
   links:
     - job
 job:
-  build: tutum.co/jackfirth/auto-fix-deps
+  image: tutum.co/jackfirth/auto-fix-deps
   environment:
     GITHUB_USER:
     GITHUB_PASSWORD:
