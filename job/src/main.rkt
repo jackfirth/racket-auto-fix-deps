@@ -17,6 +17,11 @@ require fancy-app
 
 (define catalog-requester (package-requester "pkgs.racket-lang.org"))
 
+(define (pkg-details-ring= ring pkg-details)
+  (= ring (hash-ref pkg-details 'ring)))
+
+(define pkg-ring1? (pkg-details-ring= 1 _))
+
 (define (catalog-build-succeeded? pkg-details)
   (define search-terms (hash-ref pkg-details 'search-terms))
   (not (hash-ref search-terms ':build-fail: #f)))
@@ -34,9 +39,13 @@ require fancy-app
 
 
 (define (all-pkg-details!) (get catalog-requester "pkgs-all"))
-(define bad-pkg? (and? catalog-build-succeeded?
+(define bad-pkg? (and? pkg-ring1?
+                       catalog-build-succeeded?
                        has-undeclared-dependencies?
                        pkg-has-source-on-github?))
+
+(define filter-ring1-pkgs (filter-hash-by-value _ pkg-ring1?))
+(define all-ring1-pkg-details! (compose filter-ring1-pkgs all-pkg-details!))
 
 (define (names-of-bad-pkgs all-pkg-details)
   (hash-keys
@@ -48,6 +57,25 @@ require fancy-app
 (define (auto-fix-deps! pkg-name)
   (systemf "/src/fix-deps.sh ~a" pkg-name))
 
-(module+ main
-  (define bad-pkg-names (names-of-bad-pkgs (all-pkg-details!)))
-  (for-each auto-fix-deps! bad-pkg-names))
+
+(define (append-map-dedupe f vs)
+  (remove-duplicates (append-map f vs)))
+
+(define (pkg-authors all-pkg-details)
+  (append-map-dedupe (hash-ref _ 'authors) (hash-values all-pkg-details)))
+
+(define (is-author-of-pkg? author pkg-details)
+  (set-member? (hash-ref pkg-details 'authors) author))
+
+(define (author-num-packages author all-pkg-details)
+  (length (filter (is-author-of-pkg? author _ ) (hash-values all-pkg-details))))
+
+(define (all-author-num-packages all-pkg-details)
+  (for/hash ([author (in-list (pkg-authors all-pkg-details))])
+    (values author (author-num-packages author all-pkg-details))))
+
+
+
+(sort (hash->list (all-author-num-packages (all-ring1-pkg-details!)))
+      <
+      #:key cdr)

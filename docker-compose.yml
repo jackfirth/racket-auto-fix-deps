@@ -1,0 +1,16 @@
+queue:
+  build: ./queue
+worker:
+  build: ./worker
+  privileged: true
+  links:
+    - "queue:queue"
+  volumes:
+    - "/var/run/docker.sock:/var/run/docker.sock"
+pkg-fixer:
+  build: ./worker
+  dockerfile: pkg-vm.Dockerfile
+job-creator:
+  build: ./job-creator
+  links:
+    - "queue:queue"
